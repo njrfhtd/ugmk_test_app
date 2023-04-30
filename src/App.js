@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import {Navigate, Route, Routes} from "react-router-dom";
+import Home from "./pages/home/Home";
+import Details from "./pages/details/Details";
+import {observer} from "mobx-react";
+import {useEffectOnce} from "./hooks/useEffectOnce";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = observer(({store}) => {
+
+    useEffectOnce(() => {
+        store.loadProducts();
+    }, []);
+
+    return (
+        <Routes>
+            <Route path="/" element={<Home store={store}/>}/>
+            <Route path="details/:factory/:month" element={<Details store={store}/>}/>
+            <Route path="*" element={<Navigate replace to="/"/>}/>
+        </Routes>
+    );
+});
 
 export default App;

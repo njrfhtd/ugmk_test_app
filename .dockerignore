@@ -1,0 +1,9 @@
+.git
+.idea
+.editorconfig
+.gitignore
+/.vscode/*
+/e2e
+/docs
+*.zip
+npm-debug.log
