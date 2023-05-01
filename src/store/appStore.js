@@ -193,7 +193,6 @@ class AppStore {
                 return responseData;
             })
             .then((response) => {
-                console.error('+++ config:', response);
                 this.setConfig(response);
             })
             .catch((error) => {
