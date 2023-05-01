@@ -1,36 +1,39 @@
 import {action, makeObservable, observable} from "mobx";
 
 class AppStore {
-    products = undefined;
-    details = undefined;
-    loadingProducts = false;
-    loadingProductsError = undefined;
+    data = undefined;
+    loadingData = undefined;
+    loadingDataError = undefined;
     productKeysOptions = [
         {
             label: 'Все продукты',
-            value: undefined,
+            value: 'all',
             visible: true,
+            detailsVisible: false,
         },
         {
             label: 'Продукт 1',
             value: 'product1',
             visible: true,
+            detailsVisible: true,
         },
         {
             label: 'Продукт 2',
             value: 'product2',
             visible: true,
+            detailsVisible: true,
         },
         {
             label: 'Продукт 3',
             value: 'product3',
             visible: false,
+            detailsVisible: false,
         },
     ];
     productNames = {
         product1: 'Продукт 1',
         product2: 'Продукт 2',
-        'product3': 'Продукт 3',
+        product3: 'Продукт 3',
     };
     productColors = {
         product1: '#008000',
@@ -40,6 +43,16 @@ class AppStore {
     factoryNames = {
         1: 'А',
         2: 'Б',
+    };
+    factories = {
+        1: {
+            name: 'А',
+            color: '#FE0000',
+        },
+        2: {
+            name: 'Б',
+            color: '#0001F9',
+        },
     };
     humanMonths = {
         0: 'Янв',
@@ -58,36 +71,69 @@ class AppStore {
 
     constructor() {
         makeObservable(this, {
-            loadProducts: action,
-            products: observable,
-            details: observable,
-            loadingProducts: observable,
-            loadingProductsError: observable,
+            setData: action,
+            setLoadingData: action,
+            setLoadingDataError: action,
+            data: observable,
+            loadingData: observable,
+            loadingDataError: observable,
         });
     }
 
-    setProducts(products) {
-        this.products = products;
+    setData(data) {
+        this.data = data;
     }
 
-    setDetails(details) {
-        this.details = details;
+    setLoadingData(loadingData) {
+        this.loadingData = loadingData;
     }
 
-    setLoadingProducts(loadingProducts) {
-        this.loadingProducts = loadingProducts;
+    setLoadingDataError(loadingDataError) {
+        this.loadingDataError = loadingDataError;
     }
 
-    setLoadingProductsError(loadingProductsError) {
-        this.loadingProductsError = loadingProductsError;
+    refactoringData(rawData) {
+        const months = [...Array(12).keys()].map(v => v);
+        const data = {};
+        months.forEach((month) => {
+            if (data[month] === undefined) {
+                data[month] = {};
+            }
+            Object.keys(this.factoryNames).forEach((factory_id) => {
+                if (data[month][factory_id] === undefined) {
+                    data[month][factory_id] = {};
+                }
+                Object.keys(this.productNames).forEach((product_id) => {
+                    if (data[month][factory_id][product_id] === undefined) {
+                        data[month][factory_id][product_id] = 0;
+                        data[month][factory_id]['all'] = 0;
+                    }
+                });
+            });
+        });
+        rawData.forEach((value) => {
+            if (!!value.date) {
+                const valueMonth = Number(value.date.split('/')[1]);
+                if (!isNaN(valueMonth)) {
+                    const valueFactoryId = value.factory_id;
+                    if (valueFactoryId !== null && valueFactoryId !== undefined) {
+                        Object.keys(this.productNames).forEach((product_id) => {
+                            data[valueMonth - 1][valueFactoryId][product_id] += Number(value[product_id] || 0);
+                            data[valueMonth - 1][valueFactoryId]['all'] += Number(value[product_id] || 0);
+                        });
+                    }
+                }
+            }
+        });
+        this.setData(data);
     }
 
-    loadProducts() {
+    loadData() {
         if (window.location.pathname !== '/') {
             window.location.pathname = '/';
             return;
         }
-        this.setLoadingProducts(true);
+        this.setLoadingData(true);
         fetch(process.env.REACT_APP_API_URL)
             .then(async (response) => {
                 let responseData;
@@ -106,13 +152,13 @@ class AppStore {
                 };
             })
             .then((response) => {
-                this.setProducts(response.data);
-                this.setLoadingProducts(false);
-                this.setLoadingProductsError(response.error);
+                this.refactoringData(response.data);
+                this.setLoadingData(false);
+                this.setLoadingDataError(response.error);
             })
             .catch((error) => {
-                this.setLoadingProductsError(error);
-                this.setLoadingProducts(false);
+                this.setLoadingDataError(error);
+                this.setLoadingData(false);
                 console.error(error.message);
             });
     }

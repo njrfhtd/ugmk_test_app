@@ -21,7 +21,6 @@ const Home = observer(({store}) => {
 
     const onClick = (event, factoryId) => {
         const month = event.payload;
-        store.setDetails(event);
         navigate(`details/${factoryId}/${month}`);
     }
 
@@ -30,19 +29,7 @@ const Home = observer(({store}) => {
     }
 
     const getVal = (factoryId) => (month) => {
-        const value = store.products.reduce((accumulator, currentValue) => {
-            const currentValueMonth = (currentValue.date || '').split('/')[1];
-            const currentValueFactory = currentValue.factory_id;
-            let sum = 0;
-            if (currentValueMonth !== undefined && (Number(currentValueMonth) - 1) === month && currentValueFactory === factoryId) {
-                [...[selectedProductKey.value || store.productKeysOptions.filter((productKeysOption) => !!productKeysOption.value).map((productKeysOption) => productKeysOption.value)]].flatMap((value => value)).forEach((productKey) => {
-                    if (currentValue[productKey] !== undefined && currentValue[productKey] !== null) {
-                        sum = sum + currentValue[productKey];
-                    }
-                });
-            }
-            return accumulator + sum;
-        }, 0);
+        const value = store.data[month][factoryId][selectedProductKey.value];
         return getRoundValue(value / 1000, 2);
     }
 
@@ -60,9 +47,9 @@ const Home = observer(({store}) => {
                 />
             </div>
             <div className="products-chart-wrapper">
-                {store.loadingProducts && <LoadingSpinnerComponent />}
-                {!store.loadingProducts && store.loadingProductsError && <ErrorComponent store={store} />}
-                {!store.loadingProducts && !!store?.products &&
+                {store.loadingData && <LoadingSpinnerComponent />}
+                {!store.loadingData && store.loadingDataError && <ErrorComponent store={store} />}
+                {!store.loadingData && !!store?.data &&
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                             data={months}
@@ -77,13 +64,23 @@ const Home = observer(({store}) => {
                             <XAxis dataKey={getXLabel} />
                             <YAxis />
                             <Legend
-                                payload={[
-                                    {value: 'Фабрика ' + store.factoryNames[1], type: 'square', color: '#FE0000'},
-                                    {value: 'Фабрика ' + store.factoryNames[2], type: 'square', color: '#0001F9'}
-                                ]}
+                                payload={Object.values(store.factories).map((factory) => {
+                                    return {
+                                        value: 'Фабрика ' + factory.name,
+                                        type: 'square',
+                                        color: factory.color,
+                                    };
+                                })}
                             />
-                            <Bar className="bar" dataKey={getVal(1)} fill="#FF0000" onClick={(event) => onClick(event, 1)} />
-                            <Bar className="bar" dataKey={getVal(2)} fill="#0000FF" onClick={(event) => onClick(event, 2)} />
+                            {Object.keys(store.factories).map((factoryKey) =>
+                                <Bar
+                                    key={factoryKey}
+                                    className="bar"
+                                    dataKey={getVal(factoryKey)}
+                                    fill={store.factories[factoryKey].color}
+                                    onClick={(event) => onClick(event, factoryKey)}
+                                />
+                            )}
                         </BarChart>
                     </ResponsiveContainer>
                 }

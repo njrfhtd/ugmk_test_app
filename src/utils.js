@@ -4,5 +4,5 @@ export const roundValue = (num, decimals = 2) => {
 }
 
 export const getRoundValue = (value, decimals = 2) => {
-    return (value >= 1) ? Math.round(value) : roundValue(value, decimals);
+    return (value === 0 || value >= 1) ? Math.round(value) : roundValue(value, decimals);
 }

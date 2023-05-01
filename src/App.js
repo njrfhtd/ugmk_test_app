@@ -7,7 +7,7 @@ import {useEffectOnce} from "./hooks/useEffectOnce";
 const App = observer(({store}) => {
 
     useEffectOnce(() => {
-        store.loadProducts();
+        store.loadData();
     }, []);
 
     return (

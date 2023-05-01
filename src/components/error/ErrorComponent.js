@@ -3,12 +3,12 @@ import "./ErrorComponent.css";
 
 const ErrorComponent = observer(({store}) => {
     return (
-        !!store.loadingProductsError && <div className="error-wrapper">
+        !!store.loadingDataError && <div className="error-wrapper">
             <div className="error-status">
-                {store.loadingProductsError.status}
+                {store.loadingDataError.status}
             </div>
             <div className="error-status-text">
-                {store.loadingProductsError.statusText}
+                {store.loadingDataError.statusText}
             </div>
         </div>
     );
