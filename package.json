@@ -3,22 +3,28 @@
   "version": "1.1.1",
   "private": true,
   "dependencies": {
+    "cors": "^2.8.5",
+    "csv-parse": "^5.3.9",
+    "express": "^4.18.2",
+    "iconv-lite": "^0.6.3",
     "mobx": "^6.9.0",
     "mobx-react": "^7.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.0",
-    "react-select": "^5.7.2",
     "react-scripts": "5.0.1",
+    "react-select": "^5.7.2",
     "recharts": "2.5.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start-rest-api-server": "node rest-api-server/index.js",
+    "start-client": "react-scripts start",
+    "start": "concurrently \"npm:start-rest-api-server\" \"npm:start-client\"",
     "build": "react-scripts build",
     "predockerize": "npm install && npm run build",
     "dockerize": "docker build -t ugmk_test_app .",
-    "dockerize-docker": "docker build -f Dockerfile-docker -t ugmk_test_app .",
-    "start-container": "docker run --rm --publish 3000:80 --name ugmk_test_app ugmk_test_app"
+    "start-container": "docker run -i -t --rm --publish 3000:80 --publish 3001:3001 --name ugmk_test_app ugmk_test_app",
+    "stop-container": "docker stop ugmk_test_app"
   },
   "eslintConfig": {
     "extends": [
@@ -37,5 +43,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1"
   }
 }

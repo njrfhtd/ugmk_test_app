@@ -157,7 +157,10 @@ class AppStore {
                 this.setLoadingDataError(response.error);
             })
             .catch((error) => {
-                this.setLoadingDataError(error);
+                this.setLoadingDataError({
+                    status: null,
+                    statusText: 'Системная ошибка'
+                });
                 this.setLoadingData(false);
                 console.error(error.message);
             });
