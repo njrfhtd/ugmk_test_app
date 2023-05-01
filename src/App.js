@@ -3,19 +3,36 @@ import Home from "./pages/home/Home";
 import Details from "./pages/details/Details";
 import {observer} from "mobx-react";
 import {useEffectOnce} from "./hooks/useEffectOnce";
+import {reaction} from "mobx";
+import LoadingSpinnerComponent from "./components/loading-spinner/LoadingSpinnerComponent";
 
 const App = observer(({store}) => {
 
     useEffectOnce(() => {
-        store.loadData();
+        store.loadConfig();
+
+        reaction(
+            () => [store.config],
+            ([config]) => {
+                if (!!config) {
+                    store.loadData();
+                }
+            },
+            {fireImmediately: true}
+        ); // reaction
     }, []);
 
     return (
-        <Routes>
-            <Route path="/" element={<Home store={store}/>}/>
-            <Route path="details/:factory/:month" element={<Details store={store}/>}/>
-            <Route path="*" element={<Navigate replace to="/"/>}/>
-        </Routes>
+        <>
+            {!store.config && <LoadingSpinnerComponent />}
+            {!!store.config &&
+                <Routes>
+                    <Route path="/" element={<Home store={store}/>}/>
+                    <Route path="details/:factory/:month" element={<Details store={store}/>}/>
+                    <Route path="*" element={<Navigate replace to="/"/>}/>
+                </Routes>
+            }
+        </>
     );
 });
 

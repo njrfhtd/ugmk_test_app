@@ -14,4 +14,8 @@ services:
             context: .
         ports:
             - "3000:80"
+        volumes:
+            - type: bind
+              source: ./public/config/
+              target: /usr/share/nginx/html/config
         restart: unless-stopped

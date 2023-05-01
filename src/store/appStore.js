@@ -1,6 +1,7 @@
 import {action, makeObservable, observable} from "mobx";
 
 class AppStore {
+    config = undefined;
     data = undefined;
     loadingData = undefined;
     loadingDataError = undefined;
@@ -71,13 +72,19 @@ class AppStore {
 
     constructor() {
         makeObservable(this, {
+            setConfig: action,
             setData: action,
             setLoadingData: action,
             setLoadingDataError: action,
+            config: observable,
             data: observable,
             loadingData: observable,
             loadingDataError: observable,
         });
+    }
+
+    setConfig(config) {
+        this.config = config;
     }
 
     setData(data) {
@@ -134,7 +141,7 @@ class AppStore {
             return;
         }
         this.setLoadingData(true);
-        fetch(process.env.REACT_APP_API_URL)
+        fetch(this.config.host)
             .then(async (response) => {
                 let responseData;
                 let responseDataParseError = false;
@@ -163,6 +170,33 @@ class AppStore {
                 });
                 this.setLoadingData(false);
                 console.error(error.message);
+            });
+    }
+
+    loadConfig() {
+        if (window.location.pathname !== '/') {
+            window.location.pathname = '/';
+            return;
+        }
+        fetch('/config/config.json', {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+        })
+            .then(async (response) => {
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (e) {
+                }
+
+                return responseData;
+            })
+            .then((response) => {
+                this.setConfig(response);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 }
