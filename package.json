@@ -22,9 +22,9 @@
     "start": "concurrently \"npm:start-rest-api-server\" \"npm:start-client\"",
     "build": "react-scripts build",
     "predockerize": "npm install && npm run build",
-    "dockerize": "docker build -t ugmk_test_app .",
-    "start-container": "docker run -i -t --rm --publish 3000:80 --publish 3001:3001 --name ugmk_test_app ugmk_test_app",
-    "stop-container": "docker stop ugmk_test_app"
+    "dockerize": "docker-compose build",
+    "start-container": "docker-compose up",
+    "stop-container": "docker-compose stop && docker-compose down"
   },
   "eslintConfig": {
     "extends": [

@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+    ugmk_test_app_rest_api:
+        build:
+            context: ./rest-api-server
+        container_name: ugmk_test_app_rest_api
+        ports:
+            - "3001:3001"
+        restart: unless-stopped
+    ugmk_test_app:
+        container_name: ugmk_test_app
+        build:
+            context: .
+        ports:
+            - "3000:80"
+        restart: unless-stopped
