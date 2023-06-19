@@ -14,15 +14,15 @@ Rest API доступно по адресу [http://localhost:3001/products](htt
 ### `npm run build`
 Сборка для `production mode` в папке `build`.
 
-### `npm run dockerize`
+### `sudo npm run dockerize`
 Создание `docker image` с именем `ugmk_test_app`. Во время создания, установка зависимостей и сборка приложения выполняются на локальной машине.
 
-### `npm run start-container`
+### `sudo npm run start-container`
 Запуск контейнера с именем `ugmk_test_app`, приложение доступно по адресу [http://localhost:3000](http://localhost:3000), Rest API доступно по адресу [http://localhost:3001/products](http://localhost:3001/products).\
 С локального хоста в `docker` контейнер биндится папка с простым конфигурационным файлом `/public/config/config.json`, позволяет без пересборки приложения и контейнера настроить на локальном хосте url Rest API.\
 При завершении приложения, контейнер автоматически удаляется.
 
-### `npm run stop-container`
+### `sudo npm run stop-container`
 Остановка контейнера с именем `ugmk_test_app`.\
 Контейнер автоматически удаляется.
 
