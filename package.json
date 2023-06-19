@@ -21,7 +21,6 @@
     "start-client": "react-scripts start",
     "start": "concurrently \"npm:start-rest-api-server\" \"npm:start-client\"",
     "build": "react-scripts build",
-    "predockerize": "npm install && npm run build",
     "dockerize": "docker compose build",
     "start-container": "docker compose up && docker compose down && docker compose rm -fsv",
     "stop-container": "docker compose stop && docker compose down"
